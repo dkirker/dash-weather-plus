@@ -1,0 +1,214 @@
+.main {
+	background: #000 url("../assets/app-bg.jpg") center center;
+	background-size: cover;
+	color: #ccc;
+
+	/* For preview use */
+	/*height: 480px;
+	width: 320px;*/
+}
+
+.widget-container {
+	padding-top: 30px;
+}
+
+/* Widget */
+
+.widget {
+	color: #ccc;
+}
+
+.panel-container {
+	height: 100%;
+	width: 100%;
+}
+
+.panel-content {
+	padding: 0 10px;
+}
+
+/* Widget header */
+
+.header {
+	padding-top: 5px;
+}
+.header .icon {
+	height: 64px;
+	width: 64px;
+	margin-right: 10px;
+	background:	url("../assets/icons/icon64/cloudy.png") center center no-repeat;
+	/*background-size: contain;*/
+}
+.header .temp {
+	font-size: 48px;
+	margin-right: 10px;
+	padding-top: 3px;
+	color: #fff;
+}
+.header .status-box {
+	padding-top: 5px;
+}
+.header .status-line {
+	color: #ccc;
+}
+
+.header-data {
+	text-align: right;
+}
+.header .highlow {
+	font-size: 20px;
+}
+.header .highlow .high {
+	color: #faa;
+}
+.header .highlow .low {
+	color: #aaf;
+}
+.header .status-box {
+	padding: 10px 10px 0 0;
+	font-size: 16px;
+	text-align: right;
+}
+.header .status-box .line1,
+.header .status-box .line2 {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.header .status-box .line1 {
+	margin-bottom: 5px;
+}
+/* Tab bar */
+
+.tab-bar {
+	color: #fff;
+	height: 32px;
+	/*margin-top: 3px;*/
+	/*background: rgba(0,0,0,.5);*/
+}
+.tab-bar .tab {
+	width: 33%;
+	text-align: center;
+	padding-top: 5px;
+}
+.tab-bar .tab.highlight {
+	border-top: 1px solid #ccc;
+}
+
+.white-bar {
+    margin-top: 3px;
+    width: 33.4%;
+    height: 1px;
+    background: white;
+    -webkit-transition: margin-left .2s;
+    transition: margin-left .2s;
+}
+
+/* Currently tab */
+
+.c-title {
+	font-size: 20px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.c-desc {
+	font-size: 16px;
+	color: #ccc;
+	margin-bottom: 20px;
+}
+
+.currently-col {
+	width: 50%;
+}
+.currently-element.left {
+	text-align: left;
+}
+.currently-element.right {
+	text-align: right;
+}
+.currently-element {
+	margin: 12px 0 12px 0;
+	color: #ccc;
+}
+.currently-element .icon {
+	background-image: url("../assets/icons/icon24/cloudy.png");
+	/*background-size: contain;*/
+	height: 24px;
+	width: 24px;
+}
+.currently-element .desc {
+	font-size: 16px;
+	padding-top: 2px;
+	margin: 0 5px 0 5px;
+}
+
+/* Hourly tab */
+
+.hour-box {
+	color: #fff;
+	font-size: 15px;
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(100,100,100,.35);
+}
+.hour-box .hour {
+	font-weight: bold;
+	color: #aaa;
+	margin-right: 10px;
+	width: 35px;
+	text-align: right;
+	/*background: #300;*/
+}
+.hour-box .temp {
+	margin-right: 10px;
+	text-align: right;
+	width: 30px;
+	/*background: #300;*/
+}
+.hour-box .forecast {
+	margin-right: 10px;
+	color: #ccc;
+	/*background: #300;*/
+}
+.hour-box .precip {
+	width: 35px;
+	text-align: right;
+	/*background: #300;*/
+}
+
+/* Daily tab */
+
+.day-box {
+	color: #aaa;
+	font-size: 15px;
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(100,100,100,.35);
+}
+.day-box .icon {
+	height: 32px;
+	width: 32px;
+	background-image: url("../assets/icons/icon32/partly-cloudy-day.png");
+	/*background-size: contain;*/
+}
+.day-box .high,
+.day-box .low {
+	width: 35px;
+	color: #fff;
+	text-align: right;
+	margin-right: 7px;
+}
+.day-box .high {
+	color: #faa;
+}
+.day-box .low {
+	color: #aaf;
+}
+.day-box .date {
+	color: #fff;
+}
+/*.day-box .forecast {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 240px;
+}*/
