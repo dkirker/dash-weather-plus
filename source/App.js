@@ -84,7 +84,7 @@ enyo.kind({
 						{classes: "c-title", style: "margin-top: 20px;", content: "App"},
 						// {kind: "onyx.WebAppButton", classes: "onyx-dark settings-button"},
 						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Show Help Boxes", ontap: "showHelpBoxes"},
-						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Launch Widget", ontap: "launchWidget"}
+						{name: "btnLaunchWidget", kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Launch Widget", showing: false, ontap: "launchWidget"}
 					]}
 				]},
 				{name: "tabCurrently", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", components: [
@@ -159,9 +159,9 @@ enyo.kind({
 			]}
 		]}
 	],
-	demoMode: true,
+	demoMode: false,
 	demoLoc: "39.953333,-75.17",
-	apiKey: "",
+	apiKey: "09e79c25c577495fbe519042b49dcd96",
 	callLimit: 40,
 	create: function() {
 		this.inherited(arguments);
@@ -178,6 +178,7 @@ enyo.kind({
 		else if (enyo.platform.webos) {
 			console.log("Platform: " + "webOS detected.");
 			PalmSystem.stageReady();
+			this.$.btnLaunchWidget.setShowing(true);
 		}
 		else {
 			console.log("Unknown platform.");
