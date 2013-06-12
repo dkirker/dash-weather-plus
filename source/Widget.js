@@ -1,13 +1,11 @@
-var appPrefs = {};
-
 enyo.kind({
-	name: "DashWeatherPlus",
+	name: "DashWeatherPlusWidget",
 	kind: "FittableRows",
-	classes: "main",
+	classes: "widget",
 	fit: true,
 	components:[
 		{kind: "FittableRows", fit: true, components: [
-			{name: "tapScroller", classes: "tap-scroller", style: "display: none;", components: [
+			{name: "tapScroller", classes: "tap-scroller", components: [
 				{name: "tapScrollUp", classes: "up", ontap: "scrollIt"},
 				{name: "tapScrollDown", classes: "down", ontap: "scrollIt"}
 			]},
@@ -20,7 +18,7 @@ enyo.kind({
 				]}
 			]},
 			{kind: "Panels", fit:true, classes: "tabs-container", arrangerKind: "CarouselArranger", onTransitionFinish: "panelChanged", narrowFit: false, index: 1, components: [
-				{name: "tabMenu", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container menu", components: [
+				{name: "tabMenu", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", style: "width: 250px;", components: [
 					{name: "menuContainer", kind: "FittableRows", classes: "panel-content", components: [
 						{classes: "c-title", content: "Settings"},
 						{kind: "FittableColumns", classes: "settings-row", components: [
@@ -125,12 +123,12 @@ enyo.kind({
 				]},
 				{name: "tabHourly", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", components: [
 					{name: "hourlyContainer", kind: "FittableRows", classes: "panel-content", components: [
-						{content: "Loading..."}
+						{content: "No data."}
 					]}
 				]},
-				{name: "tabDaily", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container last", components: [
+				{name: "tabDaily", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", components: [
 					{name: "dailyContainer", kind: "FittableRows", classes: "panel-content", components: [
-						{content: "Loading"}
+						{content: "No data."}
 					]}
 				]}
 			]},
@@ -165,7 +163,6 @@ enyo.kind({
 		}
 		else {
 			console.log("Unknown platform.");
-			console.log(enyo.platform);
 		}
 	},
 	rendered: function() {
@@ -187,9 +184,6 @@ enyo.kind({
 		this.$.panels.getAnimator().setDuration(200);
 		this.refreshData();
 	},
-	openWeb: function() {
-		window.open("http://forecast.io");
-	},
 	scrollIt: function(sender, event) {
 		var tab = this.$.panels.getActive();
 		var pos = tab.getScrollTop();
@@ -202,6 +196,9 @@ enyo.kind({
 			newPos += 100;
 			tab.scrollTo(0, newPos);
 		}
+	},
+	openWeb: function() {
+		window.open("http://forecast.io");
 	},
 	loadAppPrefs: function() {
 		appPrefs = {
@@ -293,9 +290,13 @@ enyo.kind({
 		}
 	},
 	launchWidget: function() {
-		window.open("widget.html", "dwpWidget", 'attributes={"window": "dashboard", "dashHeight": 320}');
+		window.open("myDashboard.html", "My Dashboard", 'attributes={"window": "dashboard", "dashHeight": 240}');
 	},
 	refreshData: function() {
+		if (this.demoMode) {
+			this.getWeatherData(this.demoLoc);
+			return;
+		}
 		this.getLocation();
 	},
 	getLocation: function() {
@@ -310,9 +311,7 @@ enyo.kind({
 			forceDemo = true;
 		}
 
-		// console.log("Demo Mode: " + this.demoMode);
 		if (this.demoMode || forceDemo) {
-			console.log("I see demo mode.");
 			var url = "assets/demo.json";
 			var request = new enyo.Ajax({
 					url: url
@@ -366,7 +365,6 @@ enyo.kind({
 		// ---------- Set up the widget header ----------
 
 		this.$.iconMain.applyStyle("background-image", "url('assets/icons/" + appPrefs.icons + "/icon64/" + response.currently.icon + ".png')");
-		// this.$.iconMain.applyStyle("background-image", "url('assets/cloudy.png')");
 
 		// Get current temperature
 		var temp = parseInt(response.currently.temperature, 10);

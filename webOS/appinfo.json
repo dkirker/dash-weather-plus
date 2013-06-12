@@ -1,0 +1,10 @@
+{
+  "id": "com.choorp.dash-weather-plus",
+  "version": "0.9.1",
+  "vendor": "Choorp",
+  "type": "web",
+  "main": "index.html",
+  "title": "Dash Weather+",
+  "icon": "icon.png",
+  "uiRevision": "2"
+}

@@ -1,7 +1,7 @@
 {
   "name": "Dash Weather+",
   "description": "Super awesome weather app!",
-  "launch_path": "index.html",
+  "launch_path": "debug.html",
   "icons": {
     "128": "/assets/icon-128.png"
   },
