@@ -189,7 +189,6 @@ enyo.kind({
 		if (this.demoMode)
 			console.log("Dash Weather+ is in DEMO MODE");
 
-		// window.localStorage.callCount = 0;
 		if (window.localStorage.callCount) {
 			console.log("Call count: " + window.localStorage.callCount + " / " + this.callLimit);
 		}
@@ -367,7 +366,6 @@ enyo.kind({
 
 		var myLoc = location || this.demoLoc;
 		var url = "https://api.forecast.io/forecast/"+this.apiKey+"/"+myLoc;
-		// console.log(url);
 		var jsonp = new enyo.JsonpRequest({
 			url: url
 		});
@@ -382,7 +380,6 @@ enyo.kind({
 		// ---------- Set up the widget header ----------
 
 		this.$.iconMain.applyStyle("background-image", "url('assets/icons/" + appPrefs.icons + "/icon64/" + response.currently.icon + ".png')");
-		// this.$.iconMain.applyStyle("background-image", "url('assets/cloudy.png')");
 
 		// Get current temperature
 		var temp = parseInt(response.currently.temperature, 10);
@@ -452,8 +449,6 @@ enyo.kind({
 
 		// Get cloud cover
 		var clouds = parseInt(now.cloudCover * 100);
-		// clouds += "%";
-		// this.$.eleCloud.setUnits("%");
 		this.$.eleCloud.setDesc(clouds + "<span class='label-units'>%</span>");
 
 		// Get wind speed and direction
@@ -461,7 +456,7 @@ enyo.kind({
 		var windSpeed = parseInt(now.windSpeed);
 		var windBearing;
 
-		if(now.windBearing == 0)
+		if(now.windBearing === 0)
 			windBearing = "Var";
 		else if (now.windBearing >= 338 || now.windBearing <= 22)
 			windBearing = "N";
@@ -507,23 +502,19 @@ enyo.kind({
 		// Get sunrise time
 		var sunrise = new Date(response.daily.data[0].sunriseTime * 1000);
 		sunrise = this.formatTime(sunrise.getHours(), sunrise.getMinutes());
-		// sunrise = sunrise.getHours() + ":" + sunrise.getMinutes();
 		this.$.eleSun.setDesc(sunrise);
 
 		// Get sunset time
 		var sunset = new Date(response.daily.data[0].sunsetTime * 1000);
 		sunset = this.formatTime(sunset.getHours(), sunset.getMinutes());
-		// sunset = sunset.getHours() + ":" + sunset.getMinutes();
 		this.$.eleMoon.setDesc(sunset);
 
 		// Get humidity
 		var humid = parseInt(now.humidity * 100, 10);
-		// humid += "%";
 		this.$.eleHumid.setDesc(humid + "<span class='label-units'>%</span>");
 
 		// Get barometric pressure
 		var pressure = parseInt(now.pressure, 10);
-		// pressure += "mb";
 		this.$.eleBaro.setDesc(pressure + "<span class='label-units'>mb</span>");
 
 		// ---------- Set up the 'Hourly' tab ----------
