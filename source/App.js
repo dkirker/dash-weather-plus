@@ -143,9 +143,9 @@ enyo.kind({
 			]}
 		]}
 	],
-	demoMode: false,
+	demoMode: true,
 	demoLoc: "39.953333,-75.17",
-	apiKey: "82f4ad9f79e1adddf92732f5ca2c2f0d",
+	apiKey: "",
 	callLimit: 40,
 	create: function() {
 		this.inherited(arguments);
