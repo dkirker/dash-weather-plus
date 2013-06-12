@@ -11,5 +11,5 @@ A beautiful weather app built entirely with Enyo2.
 4. Get your own Forecast.io API key and add it to App.js and Widget.js Also set demoMode to false.
 5. From this directory (!important), run 'tools\deploy.bat'
 6. Copy contents of /webos/ to /deploy/dash-weather-plus/
-7. Use an ipk packager to make an installable app
-8. Enjoy!
+7. Use an ipk packager to package /deploy/dash-weather-plus/
+8. Install and enjoy!
