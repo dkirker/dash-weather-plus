@@ -3,6 +3,8 @@ Dash Weather Plus
 
 A beautiful weather app built entirely with Enyo2.
 
+Want to see it running on your device? Point your browser to the [Dash Weather+ Live Demo](http://app.choorp.org/DashWeatherPlus)!
+
 **Build for Web**
 
 1. git clone https://github.com/choorp/dash-weather-plus.git
