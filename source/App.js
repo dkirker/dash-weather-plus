@@ -35,6 +35,7 @@ enyo.kind({
 					{name: "statusLine2", classes: "line2", content: "Getting location...", allowHtml: true}
 				]}
 			]},
+			{name: "weatherAlerts", kind: "FittableRows", showing: false},
 			{kind: "Panels", fit:true, classes: "tabs-container", arrangerKind: "CarouselArranger", onTransitionFinish: "panelChanged", narrowFit: false, index: 1, components: [
 				{name: "tabMenu", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container menu", components: [
 					{name: "menuContainer", kind: "FittableRows", classes: "panel-content", components: [
@@ -159,7 +160,7 @@ enyo.kind({
 			]}
 		]}
 	],
-	demoMode: false,
+	demoMode: true,
 	demoLoc: "39.953333,-75.17",
 	apiKey: "",
 	callLimit: 40,
@@ -205,6 +206,9 @@ enyo.kind({
 	},
 	openWeb: function() {
 		window.open("http://forecast.io");
+	},
+	openAlert: function(sender) {
+		window.open(sender.uri);
 	},
 	scrollIt: function(sender, event) {
 		var tab = this.$.panels.getActive();
@@ -366,7 +370,7 @@ enyo.kind({
 		this.updateCallCount();
 
 		var myLoc = location || this.demoLoc;
-		var url = "https://api.forecast.io/forecast/"+this.apiKey+"/"+myLoc;
+		var url = "https://api.forecast.io/forecast/"+this.apiKey+"/"+myLoc+"?exclude=flags";
 		var jsonp = new enyo.JsonpRequest({
 			url: url
 		});
@@ -394,6 +398,30 @@ enyo.kind({
 
 		// Get the current conditions
 		this.$.statusLine2.setContent(response.currently.summary);
+
+		// Check for severe weather alerts
+		var alert;
+		var hasAlerts = false;
+		try {
+			alert = response.alerts;
+			if (alert.length > 0)
+				hasAlerts = true;
+		}
+		catch (err) {
+			// Do nothing
+		}
+
+		this.$.weatherAlerts.destroyClientControls();
+		if (hasAlerts) {
+			for(var i=0; i<alert.length; i++) {
+				this.$.weatherAlerts.createComponent({classes: "alert", content: alert[i].title, uri: alert[i].uri, ontap: "openAlert", owner: this});
+			}
+			this.$.weatherAlerts.setShowing(true);
+			this.$.weatherAlerts.render();
+		}
+		else {
+			this.$.weatherAlerts.setShowing(false);
+		}
 
 		// ---------- Set up the 'Currently' tab ----------
 
