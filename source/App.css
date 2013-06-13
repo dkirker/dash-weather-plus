@@ -113,14 +113,6 @@
 	margin-bottom: 5px;
 }
 
-.alert {
-	background: #800;
-	color: #ccc;
-	padding: 5px;
-	width: 100%;
-	margin-bottom: 3px;
-}
-
 /* Tab bar */
 
 .tab-bar {
@@ -183,6 +175,14 @@
 }
 
 /* Currently tab */
+
+.alert {
+	background: #800;
+	color: #ccc;
+	padding: 5px;
+	width: 100%;
+	margin-bottom: 3px;
+}
 
 .c-title {
 	font-size: 20px;

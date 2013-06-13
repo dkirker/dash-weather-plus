@@ -35,7 +35,6 @@ enyo.kind({
 					{name: "statusLine2", classes: "line2", content: "Getting location...", allowHtml: true}
 				]}
 			]},
-			{name: "weatherAlerts", kind: "FittableRows", showing: false},
 			{kind: "Panels", fit:true, classes: "tabs-container", arrangerKind: "CarouselArranger", onTransitionFinish: "panelChanged", narrowFit: false, index: 1, components: [
 				{name: "tabMenu", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container menu", components: [
 					{name: "menuContainer", kind: "FittableRows", classes: "panel-content", components: [
@@ -89,6 +88,7 @@ enyo.kind({
 					]}
 				]},
 				{name: "tabCurrently", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", components: [
+					{name: "weatherAlerts", kind: "FittableRows", showing: false},
 					{name: "currentlyContainer", kind: "FittableRows", classes: "panel-content", components: [
 						{name: "helpSettings", kind: "FittableRows", classes: "help-box", ontap: "closeHelpBox", components: [
 							{classes: "title", content: "Did you know?"},
@@ -399,6 +399,17 @@ enyo.kind({
 		// Get the current conditions
 		this.$.statusLine2.setContent(response.currently.summary);
 
+		// ---------- Set up the 'Currently' tab ----------
+
+		this.$.elePrecip.updateIcon();
+		this.$.eleCloud.updateIcon();
+		this.$.eleWind.updateIcon();
+		this.$.eleVis.updateIcon();
+		this.$.eleSun.updateIcon();
+		this.$.eleMoon.updateIcon();
+		this.$.eleHumid.updateIcon();
+		this.$.eleBaro.updateIcon();
+
 		// Check for severe weather alerts
 		var alert;
 		var hasAlerts = false;
@@ -422,17 +433,6 @@ enyo.kind({
 		else {
 			this.$.weatherAlerts.setShowing(false);
 		}
-
-		// ---------- Set up the 'Currently' tab ----------
-
-		this.$.elePrecip.updateIcon();
-		this.$.eleCloud.updateIcon();
-		this.$.eleWind.updateIcon();
-		this.$.eleVis.updateIcon();
-		this.$.eleSun.updateIcon();
-		this.$.eleMoon.updateIcon();
-		this.$.eleHumid.updateIcon();
-		this.$.eleBaro.updateIcon();
 
 		// Depending on the quality of the API in your area, some info in the response may not be included.
 		var description;
