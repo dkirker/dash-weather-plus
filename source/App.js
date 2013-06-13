@@ -161,7 +161,7 @@ enyo.kind({
 	],
 	demoMode: false,
 	demoLoc: "39.953333,-75.17",
-	apiKey: "09e79c25c577495fbe519042b49dcd96",
+	apiKey: "",
 	callLimit: 40,
 	create: function() {
 		this.inherited(arguments);
