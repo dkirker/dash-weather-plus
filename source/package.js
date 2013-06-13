@@ -9,6 +9,5 @@ enyo.depends(
 	"HourlyForecastRow.js",
 	"DailyForecastRow.js",
 	"TabIndicator.js",
-	"Widget.css",
 	"Widget.js"
 );
