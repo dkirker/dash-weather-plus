@@ -160,10 +160,6 @@ enyo.kind({
 			]}
 		]}
 	],
-	demoMode: true,
-	demoLoc: "39.953333,-75.17",
-	apiKey: "",
-	callLimit: 40,
 	create: function() {
 		this.inherited(arguments);
 
@@ -188,11 +184,11 @@ enyo.kind({
 	},
 	rendered: function() {
 		this.inherited(arguments);
-		if (this.demoMode)
+		if (dwpDemoMode)
 			console.log("Dash Weather+ is in DEMO MODE");
 
 		if (window.localStorage.callCount) {
-			console.log("Call count: " + window.localStorage.callCount + " / " + this.callLimit);
+			console.log("Call count: " + window.localStorage.callCount + " / " + dwpCallLimit);
 		}
 		else {
 			console.log("Cannot read window.localStorage.callCount. Resetting.");
@@ -330,8 +326,8 @@ enyo.kind({
 			forceDemo = true;
 		}
 
-		// console.log("Demo Mode: " + this.demoMode);
-		if (this.demoMode || forceDemo) {
+		// console.log("Demo Mode: " + dwpDemoMode);
+		if (dwpDemoMode || forceDemo) {
 			console.log("I see demo mode.");
 			var url = "assets/demo.json";
 			var request = new enyo.Ajax({
@@ -369,8 +365,8 @@ enyo.kind({
 		this.$.statusLine2.setContent("Getting forecast...");
 		this.updateCallCount();
 
-		var myLoc = location || this.demoLoc;
-		var url = "https://api.forecast.io/forecast/"+this.apiKey+"/"+myLoc+"?exclude=flags";
+		var myLoc = location || dwpDemoLoc;
+		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?exclude=flags";
 		var jsonp = new enyo.JsonpRequest({
 			url: url
 		});
@@ -704,7 +700,7 @@ enyo.kind({
 			window.localStorage.callCount = 1;
 
 		var calls = window.localStorage.callCount;
-		console.log("Update requested. Current count: " + calls + " / " + this.callLimit);
+		console.log("Update requested. Current count: " + calls + " / " + dwpCallLimit);
 
 		window.localStorage.lastCall = thisCall;
 	},
@@ -715,7 +711,7 @@ enyo.kind({
 	},
 	dailyLimitReached: function() {
 		var callsUsed = window.localStorage.callCount;
-		if (callsUsed > this.callLimit)
+		if (callsUsed > dwpCallLimit)
 			return true;
 		else
 			return false;
