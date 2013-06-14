@@ -13,6 +13,9 @@ commit:
 	@git commit
 	@git push
 
+init:
+	@git submodule update --init
+
 install: all
 	@palm-install deploy/*.ipk
 
