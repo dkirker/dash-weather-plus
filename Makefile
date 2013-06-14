@@ -17,10 +17,12 @@ init:
 	@git submodule update --init
 
 install: all
-	@palm-install deploy/*.ipk
+	@cd deploy/ && \
+	palm-package dash-weather-plus/ && \
+	palm-install *.ipk
 
 clean:
-	@rm deploy/* || true
+	@rm -rf deploy/* || true
 
 appid:
 	@grep '"id"' appinfo.json | cut -d: -f2 | cut -d'"' -f2 > .appid
