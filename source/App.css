@@ -55,7 +55,7 @@
 	height: 64px;
 	width: 64px;
 	margin-right: 10px;
-	background:	url("../assets/cloudy.png") center center no-repeat;
+	background:	url("../assets/icons/optIconsColor/icon64/cloudy.png") center center no-repeat;
 	background-size: contain;
 }
 .header .temp {
