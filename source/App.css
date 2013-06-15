@@ -263,34 +263,3 @@
 .day-box .date {
 	color: #fff;
 }
-
-/* webOS widget styles */
-
-.widget {
-	background: #000 url("../assets/widget-bg2.png") center center;
-	background-size: cover;
-	color: #a5a5a5;
-}
-
-/* Tap Scroller */
-
-.widget .tap-scroller {
-	position: absolute;
-	top: 70px;
-	left: 0;
-	z-index: 100;
-	height: 218px;
-	width: 100%;
-}
-
-.widget .tap-scroller .up {
-	background: none;
-	height: 50%;
-	width: 100%;
-}
-
-.widget .tap-scroller .down {
-	background: none;
-	height: 50%;
-	width: 100%;
-}
