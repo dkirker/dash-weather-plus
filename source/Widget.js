@@ -33,64 +33,10 @@ enyo.kind({
 					{name: "statusLine2", classes: "line2", content: "Getting location...", allowHtml: true}
 				]}
 			]},
-			{kind: "Panels", fit:true, classes: "tabs-container", arrangerKind: "CarouselArranger", onTransitionFinish: "panelChanged", narrowFit: false, index: 1, components: [
-				{name: "tabMenu", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", style: "width: 250px;", components: [
-					{name: "menuContainer", kind: "FittableRows", classes: "panel-content", components: [
-						{classes: "c-title", content: "Settings"},
-						{kind: "FittableColumns", classes: "settings-row", components: [
-							{content: "Units", classes: "label", fit: true},
-							{kind: "onyx.PickerDecorator", components: [
-								{name: "prefUnitsButton", kind: "onyx.PickerButton", content: "Units", classes: "custom-picker"},
-								{name: "prefUnitsPick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
-									{content: "Imperial", name: "optImperial", active: true},
-									{content: "Metric", name: "optMetric"}
-								]}
-							]}
-						]},
-						{kind: "FittableColumns", classes: "settings-row", components: [
-							{content: "Time", classes: "label", fit: true},
-							{kind: "onyx.PickerDecorator", components: [
-								{name: "prefTimeButton", kind: "onyx.PickerButton", content: "Time", classes: "custom-picker"},
-								{name: "prefTimePick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
-									{content: "12 hour", name: "opt12hour", active: true},
-									{content: "24 hour", name: "opt24hour"}
-								]}
-							]}
-						]},
-						{kind: "FittableColumns", classes: "settings-row", components: [
-							{content: "Icon Pack", classes: "label", fit: true},
-							{kind: "onyx.PickerDecorator", components: [
-								{name: "prefIconsButton", kind: "onyx.PickerButton", content: "Default", classes: "custom-picker"},
-								{name: "prefIconsPick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
-									{content: "White", name: "optIconsWhite", active: true},
-									{content: "Color", name: "optIconsColor"}
-								]}
-							]}
-						]},
-						{kind: "FittableColumns", classes: "settings-row", components: [
-							{content: "Theme", classes: "label", fit: true},
-							{kind: "onyx.PickerDecorator", components: [
-								{name: "prefThemeButton", kind: "onyx.PickerButton", content: "Default", classes: "custom-picker"},
-								{name: "prefThemePick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
-									{content: "Default", name: "optThemeDefault", active: true},
-									{content: "Light", name: "optThemeLight"},
-									{content: "Holo Dark", name: "optThemeHoloDark"}
-								]}
-							]}
-						]},
-						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Save and Apply", ontap: "saveAppPrefs"},
-						{classes: "c-title", style: "margin-top: 20px;", content: "App"},
-						// {kind: "onyx.WebAppButton", classes: "onyx-dark settings-button"},
-						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Show Help Boxes", ontap: "showHelpBoxes"},
-						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Launch Widget", ontap: "launchWidget"}
-					]}
-				]},
+			{kind: "Panels", fit:true, classes: "tabs-container", arrangerKind: "CarouselArranger", onTransitionFinish: "panelChanged", narrowFit: false, index: 0, components: [
 				{name: "tabCurrently", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", components: [
+					{name: "weatherAlerts", kind: "FittableRows", showing: false},
 					{name: "currentlyContainer", kind: "FittableRows", classes: "panel-content", components: [
-						{name: "helpSettings", kind: "FittableRows", classes: "help-box", ontap: "closeHelpBox", components: [
-							{classes: "title", content: "Did you know?"},
-							{classes: "desc", content: "You can get to the settings menu by swiping to the right."}
-						]},
 						{name: "warnCallLimit", kind: "FittableRows", classes: "help-box", ontap: "closeHelpBox", components: [
 							{classes: "title", content: "Notice"},
 							{classes: "desc", content: "Daily call limit reached; reverting to demo mode. Thanks for trying the live demo!"}
@@ -103,23 +49,6 @@ enyo.kind({
 						{classes: "c-title", content: "Your Week"},
 						{name: "yourWeek", classes: "c-desc"},
 						{classes: "c-title", content: "Right Now"},
-						{name: "helpIcons", kind: "FittableRows", classes: "help-box", ontap: "closeHelpBox", components: [
-							{classes: "title", content: "What are these icons?"},
-							{kind: "FittableColumns", components: [
-								{kind: "FittableRows", style: "width: 50%;", components: [
-									{content: "- Precip Intensity"},
-									{content: "- Cloud Cover"},
-									{content: "- Wind"},
-									{content: "- Visibility"}
-								]},
-								{kind: "FittableRows", style: "width: 50%; text-align: right;", components: [
-									{content: "Sunrise -"},
-									{content: "Sunset -"},
-									{content: "Humidity -"},
-									{content: "Pressure -"}
-								]}
-							]}
-						]},
 						{kind: "FittableColumns", components: [
 							{kind: "FittableRows", classes: "currently-col", components: [
 								{name: "elePrecip", kind: "CurrentlyElementL", icon: "rain", desc:"Precipitation"},
@@ -150,7 +79,6 @@ enyo.kind({
 			]},
 			{kind: "TabIndicator"},
 			{kind: "FittableColumns", classes: "tab-bar", components: [
-				// {name: "tabbarMenu", classes: "tab", content: "Menu", ontap: "switchTab"},
 				{name: "tabbarCurrently", classes: "tab", content: "Currently", ontap: "switchTab"},
 				{name: "tabbarHourly", classes: "tab", content: "Hourly", ontap: "switchTab"},
 				{name: "tabbarDaily", classes: "tab", content: "Daily", ontap: "switchTab"}
@@ -159,23 +87,6 @@ enyo.kind({
 	],
 	create: function() {
 		this.inherited(arguments);
-
-		if (enyo.platform.firefoxOS) {
-			console.log("FirefoxOS detected.");
-		}
-		else if (enyo.platform.chrome) {
-			console.log("Chrome detected.");
-		}
-		else if (enyo.platform.firefox) {
-			console.log("Firefox detected.");
-		}
-		else if (enyo.platform.webos) {
-			console.log("Platform: " + "webOS detected.");
-			PalmSystem.stageReady();
-		}
-		else {
-			console.log("Unknown platform.");
-		}
 	},
 	rendered: function() {
 		this.inherited(arguments);
@@ -233,43 +144,7 @@ enyo.kind({
 		// console.log("Load app prefs...");
 		// console.log(appPrefs);
 
-		this.$.prefUnitsPick.setSelected(this.$[appPrefs.units]);
-		this.$.prefTimePick.setSelected(this.$[appPrefs.hours]);
-		this.$.prefIconsPick.setSelected(this.$[appPrefs.icons]);
-		this.$.prefThemePick.setSelected(this.$[appPrefs.theme]);
-
 		this.applyTheme(appPrefs.theme);
-
-		if (appPrefs.firstUse === true) {
-			this.showHelpBoxes();
-			appPrefs.firstUse = false;
-			window.localStorage.firstUse = appPrefs.firstUse;
-		}
-	},
-	setAppPrefs: function(sender) {
-		if (sender.name == "prefUnitsPick")
-			appPrefs.units = this.$.prefUnitsPick.getSelected().name;
-		else if (sender.name == "prefTimePick")
-			appPrefs.hours = this.$.prefTimePick.getSelected().name;
-		else if (sender.name == "prefIconsPick")
-			appPrefs.icons = this.$.prefIconsPick.getSelected().name;
-		else if (sender.name == "prefThemePick")
-			appPrefs.theme = this.$.prefThemePick.getSelected().name;
-	},
-	saveAppPrefs: function(sender) {
-		// console.log("Save app prefs...");
-		// console.log(appPrefs);
-
-		window.localStorage.prefUnits = appPrefs.units;
-		window.localStorage.prefTime = appPrefs.hours;
-		window.localStorage.prefIcons = appPrefs.icons;
-		window.localStorage.prefTheme = appPrefs.theme;
-		window.localStorage.firstUse = appPrefs.firstUse;
-
-		if (sender.content == "Save and Apply") {
-			this.gotWeatherData({}, this.lastWeatherResponse);
-			this.applyTheme(appPrefs.theme);
-		}
 	},
 	applyTheme: function(theme) {
 		var head = document.getElementsByTagName("head")[0];
@@ -299,9 +174,6 @@ enyo.kind({
 
 			head.appendChild(e);
 		}
-	},
-	launchWidget: function() {
-		window.open("myDashboard.html", "My Dashboard", 'attributes={"window": "dashboard", "dashHeight": 240}');
 	},
 	refreshData: function() {
 		if (dwpDemoMode) {
@@ -342,17 +214,15 @@ enyo.kind({
 		});
 	},
 	switchTab: function(sender, event) {
-		if (sender.name == "tabbarMenu")
+		if (sender.name == "tabbarCurrently")
 			this.$.panels.setIndex(0);
-		else if (sender.name == "tabbarCurrently")
-			this.$.panels.setIndex(1);
 		else if (sender.name == "tabbarHourly")
-			this.$.panels.setIndex(2);
+			this.$.panels.setIndex(1);
 		else
-			this.$.panels.setIndex(3);
+			this.$.panels.setIndex(2);
 	},
 	panelChanged: function(sender, event) {
-		var newPanel = event.toIndex - 1;
+		var newPanel = event.toIndex;
 		this.$.tabIndicator.setPosition(newPanel);
 	},
 	getWeatherData: function(location) {
@@ -400,6 +270,30 @@ enyo.kind({
 		this.$.eleMoon.updateIcon();
 		this.$.eleHumid.updateIcon();
 		this.$.eleBaro.updateIcon();
+
+		// Check for severe weather alerts
+		var alert;
+		var hasAlerts = false;
+		try {
+			alert = response.alerts;
+			if (alert.length > 0)
+				hasAlerts = true;
+		}
+		catch (err) {
+			// Do nothing
+		}
+
+		this.$.weatherAlerts.destroyClientControls();
+		if (hasAlerts) {
+			for(var i=0; i<alert.length; i++) {
+				this.$.weatherAlerts.createComponent({classes: "alert", content: alert[i].title, uri: alert[i].uri, ontap: "openAlert", owner: this});
+			}
+			this.$.weatherAlerts.setShowing(true);
+			this.$.weatherAlerts.render();
+		}
+		else {
+			this.$.weatherAlerts.setShowing(false);
+		}
 
 		// Depending on the quality of the API in your area, some info in the response may not be included.
 		var description;
@@ -539,6 +433,7 @@ enyo.kind({
 			var precip = "0";
 			if (hourly[i].precipIntensity !== 0) {
 				precip = parseInt(hourly[i].precipProbability * 100, 10);
+				// precip += "%";
 			}
 
 			// Get cloud cover
@@ -685,12 +580,5 @@ enyo.kind({
 			return true;
 		else
 			return false;
-	},
-	showHelpBoxes: function() {
-		this.$.helpSettings.applyStyle("display", "block");
-		this.$.helpIcons.applyStyle("display", "block");
-	},
-	closeHelpBox: function(sender) {
-		this.$[sender.name].applyStyle("display", "none");
 	}
 });
