@@ -181,9 +181,10 @@ enyo.kind({
 	refreshData: function() {
 		if (dwpDemoMode) {
 			this.getWeatherData(dwpDemoLoc);
-			return;
 		}
-		this.getLocation();
+        else {
+            this.getLocation();
+        }
 	},
 	getLocation: function() {
 		this.updateRequested();
@@ -204,17 +205,17 @@ enyo.kind({
 				});
 			request.response(this, "gotWeatherData");
 			request.go();
-			return;
 		}
+        else {
+            this.$.statusLine2.setContent("Requesting location...");
 
-		this.$.statusLine2.setContent("Requesting location...");
-
-		var app = this;
-		navigator.geolocation.getCurrentPosition(function(position) {
-			var location = position.coords.latitude + "," + position.coords.longitude;
-			// console.log("GPS location: " + location);
-			app.getWeatherData(location);
-		});
+            var app = this;
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var location = position.coords.latitude + "," + position.coords.longitude;
+                // console.log("GPS location: " + location);
+                app.getWeatherData(location);
+            });
+        }
 	},
 	switchTab: function(sender, event) {
 		if (sender.name == "tabbarCurrently")
