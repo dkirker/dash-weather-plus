@@ -28,7 +28,7 @@ enyo.kind({
 			{kind: "FittableColumns", classes: "header", components: [
 				{name: "iconMain", classes: "icon", ontap: "refreshData"},
 				{name: "currentTemp", classes: "temp", content: "00&deg;", allowHtml: true},
-				{kind: "FittableRows", fit: true, classes: "status-box", components: [
+				{kind: "FittableRows", fit: true, classes: "status-box", ontap: "launchIndex", components: [
 					{name: "statusLine1", classes: "line1", content: "Dash Weather+", allowHtml: true},
 					{name: "statusLine2", classes: "line2", content: "Getting location...", allowHtml: true}
 				]}
@@ -118,6 +118,9 @@ enyo.kind({
 			newPos += 100;
 			tab.scrollTo(0, newPos);
 		}
+	},
+	launchIndex: function() {
+		window.open("index.html", "dwp", '');
 	},
 	openWeb: function() {
 		window.open("http://forecast.io");
