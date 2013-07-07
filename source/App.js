@@ -14,7 +14,15 @@
 	limitations under the License.
 */
 
-var appPrefs = {};
+var appPrefs = {
+			units: "optImperial",
+			hours: "opt12hour",
+			icons: "optIconsWhite",
+			theme: "optThemeDefault",
+			firstUse: true,
+			autoloadWidget: false,
+			closeOnLoad: false
+        };
 
 enyo.kind({
 	name: "DashWeatherPlus",
@@ -80,6 +88,8 @@ enyo.kind({
 								]}
 							]}
 						]},
+						{name: "prefWidgetOnStart", kind: "onyx.Checkbox", content: "Widget on start", classes: "settings-checkbox", showing: false, onchange: "setAppPrefs"},
+						{name: "prefCloseOnLoad", kind: "onyx.Checkbox", content: "Close after widget", classes: "settings-checkbox", showing: false, onchange: "setAppPrefs"},
 						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Save and Apply", ontap: "saveAppPrefs"},
 						{classes: "c-title", style: "margin-top: 20px;", content: "App"},
 						// {kind: "onyx.WebAppButton", classes: "onyx-dark settings-button"},
@@ -160,6 +170,26 @@ enyo.kind({
 			]}
 		]}
 	],
+    
+    parseQueryString: function(query) {
+		var	params = {};
+
+		if (query) {
+			var items = query.split('&');
+
+			for (var i = 0, param; param = items[i]; i++) {
+				var pair = param.split('=');
+
+				if (pair.length != 2) {
+					continue;
+				}
+
+				params[pair[0]] = decodeURIComponent(pair[1]);
+			}
+		}
+
+		return(params);
+	},
 	create: function() {
 		this.inherited(arguments);
 
@@ -176,6 +206,8 @@ enyo.kind({
 			console.log("Platform: " + "webOS detected.");
 			PalmSystem.stageReady();
 			this.$.btnLaunchWidget.setShowing(true);
+			this.$.prefWidgetOnStart.setShowing(true);
+			this.$.prefCloseOnLoad.setShowing(true);
 		}
 		else {
 			console.log("Unknown platform.");
@@ -195,6 +227,7 @@ enyo.kind({
 			window.localStorage.callCount = 0;
 		}
 
+		this.params = this.parseQueryString((window.location.search	|| '').slice(1));
 		this.loadAppPrefs();
 
 		this.$.panels.getAnimator().setDuration(200);
@@ -220,41 +253,39 @@ enyo.kind({
 		}
 	},
 	loadAppPrefs: function() {
-		appPrefs = {
-			units: "optImperial",
-			hours: "opt12hour",
-			icons: "optIconsWhite",
-			theme: "optThemeDefault",
-			firstUse: true
-		};
-		if (window.localStorage.prefUnits)
-			appPrefs.units = window.localStorage.prefUnits;
-		if (window.localStorage.prefTime)
-			appPrefs.hours = window.localStorage.prefTime;
-		if (window.localStorage.prefIcons)
-			appPrefs.icons = window.localStorage.prefIcons;
-		if (window.localStorage.prefTheme)
-			appPrefs.theme = window.localStorage.prefTheme;
-		if (window.localStorage.firstUse)
-			appPrefs.firstUse = window.localStorage.firstUse;
+        if (window.localStorage.appPrefs)
+            appPrefs = enyo.json.parse(window.localStorage.appPrefs);
 
-		// console.log("Load app prefs...");
-		// console.log(appPrefs);
+		//console.log("Load app prefs...");
+		//console.log(window.localStorage.appPrefs);
 
 		this.$.prefUnitsPick.setSelected(this.$[appPrefs.units]);
 		this.$.prefTimePick.setSelected(this.$[appPrefs.hours]);
 		this.$.prefIconsPick.setSelected(this.$[appPrefs.icons]);
 		this.$.prefThemePick.setSelected(this.$[appPrefs.theme]);
+        this.$.prefWidgetOnStart.setChecked(appPrefs.autoloadWidget);
+        this.$.prefCloseOnLoad.setChecked(appPrefs.closeOnLoad);
 
 		this.applyTheme(appPrefs.theme);
 
 		if (appPrefs.firstUse === true) {
 			this.showHelpBoxes();
 			appPrefs.firstUse = false;
-			window.localStorage.firstUse = appPrefs.firstUse;
+			window.localStorage.appPrefs = enyo.json.stringify(appPrefs);
 		}
+        if (!this.params.sublaunch) {
+            if (appPrefs.autoloadWidget === true) {
+                this.launchWidget();
+            }
+            if (appPrefs.closeOnLoad === true) {
+                window.close();
+            }
+        }
 	},
 	setAppPrefs: function(sender) {
+		//console.log("Setting value");
+		//console.log(enyo.json.stringify(appPrefs));
+        
 		if (sender.name == "prefUnitsPick")
 			appPrefs.units = this.$.prefUnitsPick.getSelected().name;
 		else if (sender.name == "prefTimePick")
@@ -263,16 +294,18 @@ enyo.kind({
 			appPrefs.icons = this.$.prefIconsPick.getSelected().name;
 		else if (sender.name == "prefThemePick")
 			appPrefs.theme = this.$.prefThemePick.getSelected().name;
+        else if (sender.name == "prefWidgetOnStart")
+            appPrefs.autoloadWidget = this.$.prefWidgetOnStart.getChecked();
+        else if (sender.name == "prefCloseOnLoad")
+            appPrefs.closeOnLoad = this.$.prefCloseOnLoad.getChecked();
+        
+		//console.log(enyo.json.stringify(appPrefs));
 	},
 	saveAppPrefs: function(sender) {
-		// console.log("Save app prefs...");
-		// console.log(appPrefs);
+		//console.log("Save app prefs...");
+		//console.log(enyo.json.stringify(appPrefs));
 
-		window.localStorage.prefUnits = appPrefs.units;
-		window.localStorage.prefTime = appPrefs.hours;
-		window.localStorage.prefIcons = appPrefs.icons;
-		window.localStorage.prefTheme = appPrefs.theme;
-		window.localStorage.firstUse = appPrefs.firstUse;
+		window.localStorage.appPrefs = enyo.json.stringify(appPrefs);
 
 		if (sender.content == "Save and Apply") {
 			this.gotWeatherData({}, this.lastWeatherResponse);

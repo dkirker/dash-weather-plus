@@ -149,6 +149,15 @@
 	margin: 10px 0;
 }
 
+.settings-checkbox {
+	width: 230px;
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(100,100,100,.35);
+	padding-left: 35px;
+	line-height: 30px;
+	margin: 0 6px 6px 6px;
+}
+
 /* Currently tab */
 
 .alert {

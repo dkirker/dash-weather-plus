@@ -89,7 +89,7 @@ enyo.kind({
 			]}
 		]}
 	],
-    
+
 	dailyHigh: 0,
 	dailyLow: 99999,
     
@@ -128,34 +128,25 @@ enyo.kind({
 		}
 	},
 	launchIndex: function() {
-		window.open("index.html", "dwp", '');
+		window.open("index.html?sublaunch=true", "dwp", '');
 	},
 	openWeb: function() {
 		window.open("http://forecast.io");
 	},
 	loadAppPrefs: function() {
-		appPrefs = {
-			units: "optImperial",
-			hours: "opt12hour",
-			icons: "optIconsWhite",
-			theme: "optThemeDefault",
-			firstUse: true
-		};
-		if (window.localStorage.prefUnits)
-			appPrefs.units = window.localStorage.prefUnits;
-		if (window.localStorage.prefTime)
-			appPrefs.hours = window.localStorage.prefTime;
-		if (window.localStorage.prefIcons)
-			appPrefs.icons = window.localStorage.prefIcons;
-		if (window.localStorage.prefTheme)
-			appPrefs.theme = window.localStorage.prefTheme;
-		if (window.localStorage.firstUse)
-			appPrefs.firstUse = window.localStorage.firstUse;
+        if (window.localStorage.appPrefs)
+            appPrefs = enyo.json.parse(window.localStorage.appPrefs);
 
 		// console.log("Load app prefs...");
 		// console.log(appPrefs);
 
 		this.applyTheme(appPrefs.theme);
+
+		if (appPrefs.firstUse === true) {
+			this.showHelpBoxes();
+			appPrefs.firstUse = false;
+			window.localStorage.appPrefs.firstUse = appPrefs.firstUse;
+		}
 	},
 	applyTheme: function(theme) {
 		var head = document.getElementsByTagName("head")[0];
