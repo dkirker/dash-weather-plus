@@ -28,6 +28,10 @@ enyo.kind({
 			{kind: "FittableColumns", classes: "header", components: [
 				{name: "iconMain", classes: "icon", ontap: "refreshData"},
 				{name: "currentTemp", classes: "temp", content: "00&deg;", allowHtml: true},
+				{kind: "FittableRows", fit: true, classes: "daily-box", components: [
+					{name: "dailyHigh", classes: "line1", content: "0&deg;", allowHtml: true},
+					{name: "dailyLow", classes: "line2", content: "0&deg;", allowHtml: true}
+				]},
 				{kind: "FittableRows", fit: true, classes: "status-box", ontap: "launchIndex", components: [
 					{name: "statusLine1", classes: "line1", content: "Dash Weather+", allowHtml: true},
 					{name: "statusLine2", classes: "line2", content: "Getting location...", allowHtml: true}
@@ -85,6 +89,10 @@ enyo.kind({
 			]}
 		]}
 	],
+    
+	dailyHigh: 0,
+	dailyLow: 99999,
+    
 	create: function() {
 		this.inherited(arguments);
 	},
@@ -428,6 +436,10 @@ enyo.kind({
 			var temp = parseInt(hourly[i].temperature, 10);
 			if (appPrefs.units == "optMetric")
 				temp = this.convertToMetric(temp, "temperature");
+			this.dailyHigh = Math.max(this.dailyHigh, temp);
+			this.$.dailyHigh.setContent(this.dailyHigh + "&deg;");
+			this.dailyLow = Math.min(this.dailyLow, temp);
+			this.$.dailyLow.setContent(this.dailyLow + "&deg;");
 			temp += "&deg;";
 
 			// Get the forecast

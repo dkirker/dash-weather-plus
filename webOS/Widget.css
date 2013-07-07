@@ -55,8 +55,18 @@
 .header .status-box {
 	padding: 5px 5px 0 0;
 	font-size: 15px;
+	text-align: right;
 }
 .header .status-box .line1 {
+	margin-bottom: 3px;
+}
+
+.header .daily-box {
+	padding: 5px 5px 0 0;
+	font-size: 15px;
+	text-align: left;
+}
+.header .daily-box .line1 {
 	margin-bottom: 3px;
 }
 

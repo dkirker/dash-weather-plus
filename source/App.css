@@ -80,6 +80,21 @@
 	margin-bottom: 5px;
 }
 
+.header .daily-box {
+	padding: 10px 10px 0 0;
+	font-size: 16px;
+	text-align: left;
+}
+.header .daily-box .line1,
+.header .daily-box .line2 {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.header .daily-box .line1 {
+	margin-bottom: 5px;
+}
+
 /* Tab bar */
 
 .tab-bar {
