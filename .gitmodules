@@ -7,3 +7,9 @@
 [submodule "lib/layout"]
 	path = lib/layout
 	url = git://github.com/enyojs/layout.git
+[submodule "webos/webos-lib"]
+	path = webos/webos-lib
+	url = https://github.com/webOS-ports/webos-lib.git
+[submodule "lib/webos-lib"]
+	path = lib/webos-lib
+	url = https://github.com/webOS-ports/webos-lib.git

@@ -87,11 +87,13 @@ enyo.kind({
 				{name: "tabbarHourly", classes: "tab", content: "Hourly", ontap: "switchTab"},
 				{name: "tabbarDaily", classes: "tab", content: "Daily", ontap: "switchTab"}
 			]}
-		]}
+		]},
+		{kind: "enyo.Signals", onactivate: "activated"},
 	],
 
 	dailyHigh: 0,
 	dailyLow: 99999,
+    refreshing: true,
     
 	create: function() {
 		this.inherited(arguments);
@@ -114,6 +116,10 @@ enyo.kind({
 		this.$.panels.getAnimator().setDuration(200);
 		this.refreshData();
 	},
+    activated: function() {
+		if (!this.refreshing)
+			this.refreshData();
+    },
 	scrollIt: function(sender, event) {
 		var tab = this.$.panels.getActive();
 		var pos = tab.getScrollTop();
@@ -242,6 +248,8 @@ enyo.kind({
 		jsonp.go();
 	},
 	gotWeatherData: function(sender, response) {
+		this.refreshing = false;
+        
 		// console.log(response);
 		this.lastWeatherResponse = response;
 		this.$.sysWarning.setContent("");
