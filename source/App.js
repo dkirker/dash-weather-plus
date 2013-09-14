@@ -14,7 +14,13 @@
 	limitations under the License.
 */
 
-var appPrefs = {};
+var appPrefs = {
+	units: "optImperial",
+	hours: "opt12hour",
+	icons: "optIconsWhite",
+	theme: "optThemeDefault",
+	firstUse: true
+};
 
 enyo.kind({
 	name: "DashWeatherPlus",
@@ -197,23 +203,8 @@ enyo.kind({
 		window.open(sender.uri);
 	},
 	loadAppPrefs: function() {
-		appPrefs = {
-			units: "optImperial",
-			hours: "opt12hour",
-			icons: "optIconsWhite",
-			theme: "optThemeDefault",
-			firstUse: true
-		};
-		if (window.localStorage.prefUnits)
-			appPrefs.units = window.localStorage.prefUnits;
-		if (window.localStorage.prefTime)
-			appPrefs.hours = window.localStorage.prefTime;
-		if (window.localStorage.prefIcons)
-			appPrefs.icons = window.localStorage.prefIcons;
-		if (window.localStorage.prefTheme)
-			appPrefs.theme = window.localStorage.prefTheme;
-		if (window.localStorage.firstUse)
-			appPrefs.firstUse = window.localStorage.firstUse;
+		if (window.localStorage.appPrefs)
+			appPrefs = enyo.json.parse(window.localStorage.appPrefs);
 
 		// console.log("Load app prefs...");
 		// console.log(appPrefs);
@@ -228,7 +219,7 @@ enyo.kind({
 		if (appPrefs.firstUse === true) {
 			this.showHelpBoxes();
 			appPrefs.firstUse = false;
-			window.localStorage.firstUse = appPrefs.firstUse;
+			this.saveAppPrefs();
 		}
 	},
 	setAppPrefs: function(sender) {
@@ -245,11 +236,7 @@ enyo.kind({
 		// console.log("Save app prefs...");
 		// console.log(appPrefs);
 
-		window.localStorage.prefUnits = appPrefs.units;
-		window.localStorage.prefTime = appPrefs.hours;
-		window.localStorage.prefIcons = appPrefs.icons;
-		window.localStorage.prefTheme = appPrefs.theme;
-		window.localStorage.firstUse = appPrefs.firstUse;
+		window.localStorage.appPrefs = enyo.json.stringify(appPrefs);
 
 		if (sender.content == "Save and Apply") {
 			this.gotWeatherData({}, this.lastWeatherResponse);
