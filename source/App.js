@@ -23,10 +23,6 @@ enyo.kind({
 	fit: true,
 	components:[
 		{kind: "FittableRows", fit: true, components: [
-			{name: "tapScroller", classes: "tap-scroller", style: "display: none;", components: [
-				{name: "tapScrollUp", classes: "up", ontap: "scrollIt"},
-				{name: "tapScrollDown", classes: "down", ontap: "scrollIt"}
-			]},
 			{kind: "FittableColumns", classes: "header", components: [
 				{name: "iconMain", classes: "icon", ontap: "refreshData"},
 				{name: "currentTemp", classes: "temp", content: "00&deg;", allowHtml: true},
@@ -83,8 +79,7 @@ enyo.kind({
 						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Save and Apply", ontap: "saveAppPrefs"},
 						{classes: "c-title", style: "margin-top: 20px;", content: "App"},
 						// {kind: "onyx.WebAppButton", classes: "onyx-dark settings-button"},
-						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Show Help Boxes", ontap: "showHelpBoxes"},
-						{name: "btnLaunchWidget", kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Launch Widget", showing: false, ontap: "launchWidget"}
+						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Show Help Boxes", ontap: "showHelpBoxes"}
 					]}
 				]},
 				{name: "tabCurrently", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container", components: [
@@ -172,11 +167,6 @@ enyo.kind({
 		else if (enyo.platform.firefox) {
 			console.log("Firefox detected.");
 		}
-		else if (enyo.platform.webos) {
-			console.log("Platform: " + "webOS detected.");
-			PalmSystem.stageReady();
-			this.$.btnLaunchWidget.setShowing(true);
-		}
 		else {
 			console.log("Unknown platform.");
 			console.log(enyo.platform);
@@ -205,19 +195,6 @@ enyo.kind({
 	},
 	openAlert: function(sender) {
 		window.open(sender.uri);
-	},
-	scrollIt: function(sender, event) {
-		var tab = this.$.panels.getActive();
-		var pos = tab.getScrollTop();
-		var newPos = pos;
-		if (sender.name == "tapScrollUp") {
-			newPos -= 100;
-			tab.scrollTo(0, newPos);
-		}
-		else {
-			newPos += 100;
-			tab.scrollTo(0, newPos);
-		}
 	},
 	loadAppPrefs: function() {
 		appPrefs = {
@@ -308,9 +285,6 @@ enyo.kind({
 			head.appendChild(e);
 		}
 	},
-	launchWidget: function() {
-		window.open("widget.html", "dwpWidget", 'attributes={"window": "dashboard", "dashHeight": 320}');
-	},
 	refreshData: function() {
 		this.getLocation();
 	},
@@ -374,7 +348,7 @@ enyo.kind({
 		jsonp.go();
 	},
 	gotWeatherData: function(sender, response) {
-		// console.log(response);
+		console.log(response);
 		this.lastWeatherResponse = response;
 		this.$.sysWarning.setContent("");
 
