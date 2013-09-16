@@ -20,7 +20,7 @@ Now, here's what else you need to do to get it running on your platform-of-choic
 1. Copy /deploy/dash-weather-plus/ to your server.
 2. Enjoy!
 
-**Build as Chrome Extension**
+**Build as Chrome App**
 
 1. Copy contents of /extension/ to /deploy/dash-weather-plus/
 2. Install and enjoy!
