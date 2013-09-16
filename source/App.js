@@ -183,14 +183,6 @@ enyo.kind({
 		if (dwpDemoMode)
 			console.log("Dash Weather+ is in DEMO MODE");
 
-		if (window.localStorage.callCount) {
-			console.log("Call count: " + window.localStorage.callCount + " / " + dwpCallLimit);
-		}
-		else {
-			console.log("Cannot read window.localStorage.callCount. Resetting.");
-			window.localStorage.callCount = 0;
-		}
-
 		this.loadAppPrefs();
 
 		this.$.panels.getAnimator().setDuration(200);
@@ -203,12 +195,23 @@ enyo.kind({
 		window.open(sender.uri);
 	},
 	loadAppPrefs: function() {
-		if (window.localStorage.appPrefs)
-			appPrefs = enyo.json.parse(window.localStorage.appPrefs);
+		console.log("Getting app prefs...");
 
-		// console.log("Load app prefs...");
-		// console.log(appPrefs);
-
+		if(enyo.platform.chrome) {
+			chrome.storage.local.get("appPrefs", enyo.bind(this, function(response){
+				if(response.appPrefs)
+					appPrefs = enyo.json.parse(response.appPrefs);
+				this.gotAppPrefs();
+			}));
+		}
+		else {
+			if (window.localStorage.appPrefs) {
+				appPrefs = enyo.json.parse(window.localStorage.appPrefs);
+				this.gotAppPrefs();
+			}
+		}
+	},
+	gotAppPrefs: function() {
 		this.$.prefUnitsPick.setSelected(this.$[appPrefs.units]);
 		this.$.prefTimePick.setSelected(this.$[appPrefs.hours]);
 		this.$.prefIconsPick.setSelected(this.$[appPrefs.icons]);
@@ -236,9 +239,17 @@ enyo.kind({
 		// console.log("Save app prefs...");
 		// console.log(appPrefs);
 
-		window.localStorage.appPrefs = enyo.json.stringify(appPrefs);
+		var prefs = enyo.json.stringify(appPrefs);
+		if(enyo.platform.chrome) {
+			chrome.storage.local.set({'appPrefs': prefs}, enyo.bind(this, function() {
+				console.log('Settings saved');
+			}));
+		}
+		else {
+			window.localStorage.appPrefs = prefs;
+		}
 
-		if (sender.content == "Save and Apply") {
+		if (sender && sender.content == "Save and Apply") {
 			this.gotWeatherData({}, this.lastWeatherResponse);
 			this.applyTheme(appPrefs.theme);
 		}
@@ -247,7 +258,7 @@ enyo.kind({
 		var head = document.getElementsByTagName("head")[0];
 
 		// Remove any other theme stylesheets
-		console.log("Removing old theme sheets...");
+		// console.log("Removing old theme sheets...");
 		var themeList = ["optThemeLight", "optThemeHoloDark"];
 		var appsheets = document.getElementsByTagName("link");
 		for (i=0; i < appsheets.length; i++) {
@@ -276,37 +287,25 @@ enyo.kind({
 		this.getLocation();
 	},
 	getLocation: function() {
-		this.updateRequested();
-
-		var forceDemo = false;
-		var reject = this.dailyLimitReached();
-
-		if (reject) {
-			console.log("Daily limit reached. Reverting to Demo mode.");
-			this.$.warnCallLimit.applyStyle("display", "block");
-			forceDemo = true;
-		}
-
 		// console.log("Demo Mode: " + dwpDemoMode);
-		if (dwpDemoMode || forceDemo) {
-			console.log("I see demo mode.");
+		if (dwpDemoMode) {
 			var url = "assets/demo.json";
 			var request = new enyo.Ajax({
 					url: url
 				});
 			request.response(this, "gotWeatherData");
 			request.go();
-			return;
 		}
+		else {
+			this.$.statusLine2.setContent("Requesting location...");
 
-		this.$.statusLine2.setContent("Requesting location...");
-
-		var app = this;
-		navigator.geolocation.getCurrentPosition(function(position) {
-			var location = position.coords.latitude + "," + position.coords.longitude;
-			// console.log("GPS location: " + location);
-			app.getWeatherData(location);
-		});
+			var app = this;
+			navigator.geolocation.getCurrentPosition(function(position) {
+				var location = position.coords.latitude + "," + position.coords.longitude;
+				// console.log("GPS location: " + location);
+				app.getWeatherData(location);
+			});
+		}
 	},
 	switchTab: function(sender, event) {
 		if (sender.name == "tabbarMenu")
@@ -324,15 +323,14 @@ enyo.kind({
 	},
 	getWeatherData: function(location) {
 		this.$.statusLine2.setContent("Getting forecast...");
-		this.updateCallCount();
 
 		var myLoc = location || dwpDemoLoc;
 		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?exclude=flags";
-		var jsonp = new enyo.JsonpRequest({
+		var request = new enyo.Ajax({
 			url: url
 		});
-		jsonp.response(this, "gotWeatherData");
-		jsonp.go();
+		request.response(this, "gotWeatherData");
+		request.go();
 	},
 	gotWeatherData: function(sender, response) {
 		console.log(response);
@@ -650,32 +648,6 @@ enyo.kind({
 		}
 		newNum = parseInt(newNum, 10);
 		return(newNum);
-	},
-	updateRequested: function() {
-		var lastCall = -1;
-		if (window.localStorage.lastCall)
-			lastCall = window.localStorage.lastCall;
-
-		var thisCall = new Date().getDate();
-		if (thisCall != lastCall)
-			window.localStorage.callCount = 1;
-
-		var calls = window.localStorage.callCount;
-		console.log("Update requested. Current count: " + calls + " / " + dwpCallLimit);
-
-		window.localStorage.lastCall = thisCall;
-	},
-	updateCallCount: function() {
-		var calls = parseInt(window.localStorage.callCount, 10);
-		calls++;
-		window.localStorage.callCount = calls;
-	},
-	dailyLimitReached: function() {
-		var callsUsed = window.localStorage.callCount;
-		if (callsUsed > dwpCallLimit)
-			return true;
-		else
-			return false;
 	},
 	showHelpBoxes: function() {
 		this.$.helpSettings.applyStyle("display", "block");
