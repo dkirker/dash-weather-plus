@@ -194,10 +194,21 @@ enyo.kind({
 	openAlert: function(sender) {
 		window.open(sender.uri);
 	},
+	isLocalStorageAvailable: function() {
+		try {
+			var test = window.localStorage;
+			// console.log("window.localStorage is available");
+			return true;
+		}
+		catch (e) {
+			// console.log("window.localStorage is not available");
+			return false;
+		}
+	},
 	loadAppPrefs: function() {
 		console.log("Getting app prefs...");
 
-		if(enyo.platform.chrome) {
+		if(!this.isLocalStorageAvailable()) {
 			chrome.storage.local.get("appPrefs", enyo.bind(this, function(response){
 				if(response.appPrefs)
 					appPrefs = enyo.json.parse(response.appPrefs);
@@ -240,7 +251,7 @@ enyo.kind({
 		// console.log(appPrefs);
 
 		var prefs = enyo.json.stringify(appPrefs);
-		if(enyo.platform.chrome) {
+		if(!this.isLocalStorageAvailable()) {
 			chrome.storage.local.set({'appPrefs': prefs}, enyo.bind(this, function() {
 				console.log('Settings saved');
 			}));
@@ -326,9 +337,18 @@ enyo.kind({
 
 		var myLoc = location || dwpDemoLoc;
 		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?exclude=flags";
-		var request = new enyo.Ajax({
-			url: url
-		});
+
+		if(!this.isLocalStorageAvailable()) { // TODO: Find a better way to determine if running as a Chrome packaged app.
+			var request = new enyo.Ajax({
+				url: url
+			});
+		}
+		else {
+			var request = new enyo.JsonpRequest({
+				url: url
+			});
+		}
+		
 		request.response(this, "gotWeatherData");
 		request.go();
 	},
