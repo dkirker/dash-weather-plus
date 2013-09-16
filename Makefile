@@ -1,3 +1,5 @@
+# Copyright (c) 2013 Donald C. Kirker, OpenMobl Systems
+
 all:
 	./tools/deploy.sh
 	cp -r webOS/ deploy/dash-weather-plus/

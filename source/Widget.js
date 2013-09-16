@@ -1,5 +1,6 @@
 /*
 	Copyright 2013 Garrett G Downs Jr
+	Copyright (c) 2013 Donald C. Kirker, OpenMobl Systems
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
