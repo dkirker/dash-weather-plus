@@ -184,6 +184,8 @@ enyo.kind({
 		if (dwpDemoMode)
 			console.log("Dash Weather+ is in DEMO MODE");
 
+		this.requestRefresh = false;
+
 		this.loadAppPrefs();
 
 		this.$.panels.getAnimator().setDuration(200);
@@ -637,6 +639,9 @@ enyo.kind({
 		if(!m)
 			m = 0;
 
+		if (m < 10)
+			m = "0" + m;
+
 		if (appPrefs.hours == "opt24hour") {
 			time = h + ":" + m;
 		}
@@ -650,9 +655,6 @@ enyo.kind({
 				h -= 12;
 			else if (h === 0)
 				h = 12;
-
-			if (m < 10)
-				m = "0" + m;
 
 			time = h + ":" + m + "<span class='label-units'>" + ampm + "</span>";
 		}
