@@ -15,7 +15,7 @@
 */
 
 var appPrefs = {
-	units: "optImperial",
+	units: "optAuto",
 	hours: "opt12hour",
 	icons: "optIconsWhite",
 	theme: "optThemeDefault",
@@ -46,7 +46,8 @@ enyo.kind({
 							{kind: "onyx.PickerDecorator", components: [
 								{name: "prefUnitsButton", kind: "onyx.PickerButton", content: "Units", classes: "custom-picker"},
 								{name: "prefUnitsPick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
-									{content: "Imperial", name: "optImperial", active: true},
+									{content: "Auto", name: "optAuto", active: true},
+									{content: "Imperial", name: "optImperial"},
 									{content: "Metric", name: "optMetric"}
 								]}
 							]}
@@ -237,8 +238,10 @@ enyo.kind({
 		}
 	},
 	setAppPrefs: function(sender) {
-		if (sender.name == "prefUnitsPick")
+		if (sender.name == "prefUnitsPick") {
 			appPrefs.units = this.$.prefUnitsPick.getSelected().name;
+			this.requestRefresh = true;
+		}
 		else if (sender.name == "prefTimePick")
 			appPrefs.hours = this.$.prefTimePick.getSelected().name;
 		else if (sender.name == "prefIconsPick")
@@ -261,8 +264,13 @@ enyo.kind({
 		}
 
 		if (sender && sender.content == "Save and Apply") {
-			this.gotWeatherData({}, this.lastWeatherResponse);
+			if (this.requestRefresh)
+				this.refreshData();
+			else
+				this.gotWeatherData({}, this.lastWeatherResponse);
+
 			this.applyTheme(appPrefs.theme);
+			this.requestRefresh = false;
 		}
 	},
 	applyTheme: function(theme) {
@@ -336,7 +344,20 @@ enyo.kind({
 		this.$.statusLine2.setContent("Getting forecast...");
 
 		var myLoc = location || dwpDemoLoc;
-		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?exclude=flags";
+		var units;
+		switch (appPrefs.units) {
+			case "optImperial":
+				units = "us";
+				break;
+			case "optMetric":
+				units = "si";
+				break;
+			default:
+				units = "auto";
+				break;
+		};
+
+		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?exclude=flags&units="+units;
 
 		if(!this.isLocalStorageAvailable()) { // TODO: Find a better way to determine if running as a Chrome packaged app.
 			var request = new enyo.Ajax({
@@ -362,10 +383,8 @@ enyo.kind({
 		this.$.iconMain.applyStyle("background-image", "url('assets/icons/" + appPrefs.icons + "/icon64/" + response.currently.icon + ".png')");
 
 		// Get current temperature
-		var temp = parseInt(response.currently.temperature, 10);
-		if (appPrefs.units == "optMetric")
-			temp = this.convertToMetric(temp, "temperature");
-		this.$.currentTemp.setContent(temp + "&deg;");
+		var temp = parseInt(response.currently.temperature, 10) + "&deg;";
+		this.$.currentTemp.setContent(temp);
 
 		// Use Google to get the city and state name
 		var location = response.latitude + "," + response.longitude;
@@ -452,8 +471,8 @@ enyo.kind({
 		this.$.elePrecip.setDesc(precip);
 
 		// Get cloud cover
-		var clouds = parseInt(now.cloudCover * 100);
-		this.$.eleCloud.setDesc(clouds + "<span class='label-units'>%</span>");
+		var clouds = parseInt(now.cloudCover * 100) + "<span class='label-units'>%</span>";
+		this.$.eleCloud.setDesc(clouds);
 
 		// Get wind speed and direction
 		var wind;
@@ -481,11 +500,11 @@ enyo.kind({
 		else
 			windBearing = "?";
 
-		wind = windBearing + " at " + windSpeed + "<span class='label-units'>mph</span>";
-
 		if (appPrefs.units == "optMetric") {
-			windSpeed = this.convertToMetric(windSpeed, "speed");
-			wind = windBearing + " at " + windSpeed + "<span class='label-units'>kph</span>";
+			wind = windBearing + " at " + windSpeed + "<span class='label-units'>m/s</span>";
+		}
+		else {
+			wind = windBearing + " at " + windSpeed + "<span class='label-units'>mph</span>";
 		}
 
 		this.$.eleWind.setDesc(wind);
@@ -494,7 +513,6 @@ enyo.kind({
 		var vis = now.visibility;
 
 		if (appPrefs.units == "optMetric") {
-			vis = this.convertToMetric(vis, "distance");
 			vis += "<span class='label-units'>km</span>";
 		}
 		else {
@@ -514,12 +532,12 @@ enyo.kind({
 		this.$.eleMoon.setDesc(sunset);
 
 		// Get humidity
-		var humid = parseInt(now.humidity * 100, 10);
-		this.$.eleHumid.setDesc(humid + "<span class='label-units'>%</span>");
+		var humid = parseInt(now.humidity * 100, 10) + "<span class='label-units'>%</span>";
+		this.$.eleHumid.setDesc(humid);
 
 		// Get barometric pressure
-		var pressure = parseInt(now.pressure, 10);
-		this.$.eleBaro.setDesc(pressure + "<span class='label-units'>mb</span>");
+		var pressure = parseInt(now.pressure, 10) + "<span class='label-units'>mb</span>";
+		this.$.eleBaro.setDesc(pressure);
 
 		// ---------- Set up the 'Hourly' tab ----------
 
@@ -536,8 +554,6 @@ enyo.kind({
 
 			// Get the temperature
 			var temp = parseInt(hourly[i].temperature, 10);
-			if (appPrefs.units == "optMetric")
-				temp = this.convertToMetric(temp, "temperature");
 			temp += "&deg;";
 
 			// Get the forecast
@@ -547,7 +563,6 @@ enyo.kind({
 			var precip = "0";
 			if (hourly[i].precipIntensity !== 0) {
 				precip = parseInt(hourly[i].precipProbability * 100, 10);
-				// precip += "%";
 			}
 
 			// Get cloud cover
@@ -566,14 +581,8 @@ enyo.kind({
 			var icon = daily[i].icon;
 
 			// Get the high and low temperatures
-			var high = parseInt(daily[i].temperatureMax, 10);
-			if (appPrefs.units == "optMetric")
-				high = this.convertToMetric(high, "temperature");
-			high += "&deg;";
-			var low = parseInt(daily[i].temperatureMin, 10);
-			if (appPrefs.units == "optMetric")
-				low = this.convertToMetric(low, "temperature");
-			low += "&deg;";
+			var high = parseInt(daily[i].temperatureMax, 10) + "&deg;";
+			var low = parseInt(daily[i].temperatureMin, 10) + "&deg;";
 
 			// Get the date and properly format it
 			var d = new Date(daily[i].time * 1000);
@@ -626,7 +635,7 @@ enyo.kind({
 		var ampm, time;
 
 		if(!m)
-			m = "00";
+			m = 0;
 
 		if (appPrefs.hours == "opt24hour") {
 			time = h + ":" + m;
@@ -642,32 +651,13 @@ enyo.kind({
 			else if (h === 0)
 				h = 12;
 
+			if (m < 10)
+				m = "0" + m;
+
 			time = h + ":" + m + "<span class='label-units'>" + ampm + "</span>";
 		}
 
 		return(time);
-	},
-	convertToMetric: function(num, type) {
-		var newNum;
-
-		if (typeof num != "number")
-			num = parseInt(num, 10);
-
-		switch (type) {
-			case "temperature":
-				newNum = (num - 32) / 1.8;
-				break;
-			case "distance":
-				newNum = num * 1.6;
-				break;
-			case "speed":
-				newNum = num * 1.6;
-				break;
-			default:
-				console.log("convertToMetric: No action taken.");
-		}
-		newNum = parseInt(newNum, 10);
-		return(newNum);
 	},
 	showHelpBoxes: function() {
 		this.$.helpSettings.applyStyle("display", "block");
