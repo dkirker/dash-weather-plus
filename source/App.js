@@ -180,15 +180,7 @@ enyo.kind({
 				{name: "tabbarCurrently", classes: "tab", content: "Currently", ontap: "switchTab"},
 				{name: "tabbarHourly", classes: "tab", content: "Hourly", ontap: "switchTab"},
 				{name: "tabbarDaily", classes: "tab", content: "Daily", ontap: "switchTab"}
-			]},
-			{name: "modalPopup", classes: "onyx-sample-popup", kind: "onyx.Popup", centered: true, modal: true, floating: true, onShow: "popupShown", onHide: "popupHidden", components: [
-				{kind: "onyx.InputDecorator", components: [
-					{kind: "onyx.Input"}
-				]},
-				{tag: "br"},
-				{kind: "onyx.Button", content: "Close", ontap: "closeModalPopup"},
-				{kind: "onyx.Button", content: "Another!", ontap: "showPopup", popup: "lightPopup"}
-			]},
+			]}
 		]}
 	],
 	create: function() {
