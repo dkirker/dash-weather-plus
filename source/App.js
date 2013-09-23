@@ -54,7 +54,7 @@ enyo.kind({
 						]},
 						{name: "prefLocRow", kind: "FittableColumns", classes: "settings-row", showing: false, components: [
 							{kind: "onyx.InputDecorator", style: "width: 230px;", alwaysLooksFocused: true, components: [
-							    {name: "prefLocInp", kind: "onyx.Input", placeholder: "Enter zip code...", fit: true}
+							    {name: "prefLocInp", kind: "onyx.Input", placeholder: "City/State or Zip", fit: true}
 							]}
 						]},
 						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Add Location", ontap: "addLocation"},
