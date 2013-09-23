@@ -17,9 +17,13 @@
 var appPrefs = {
 	units: "optAuto",
 	hours: "opt12hour",
-	icons: "optIconsWhite",
+	icons: "optIconsColor",
 	theme: "optThemeDefault",
-	firstUse: true
+	loc: "gps",
+	firstUse: true,
+	locs: [
+		{displayName: "Current Location", coords: "gps", active: true}
+	]
 };
 
 enyo.kind({
@@ -29,6 +33,10 @@ enyo.kind({
 	fit: true,
 	components:[
 		{kind: "FittableRows", fit: true, components: [
+			{name: "tapScroller", classes: "tap-scroller", components: [
+				{name: "tapScrollUp", classes: "up", ontap: "scrollIt"},
+				{name: "tapScrollDown", classes: "down", ontap: "scrollIt"}
+			]},
 			{kind: "FittableColumns", classes: "header", components: [
 				{name: "iconMain", classes: "icon", ontap: "refreshData"},
 				{name: "currentTemp", classes: "temp", content: "00&deg;", allowHtml: true},
@@ -40,12 +48,23 @@ enyo.kind({
 			{kind: "Panels", fit:true, classes: "tabs-container", arrangerKind: "CarouselArranger", onTransitionFinish: "panelChanged", narrowFit: false, index: 1, components: [
 				{name: "tabMenu", kind: "enyo.Scroller", strategyKind: "TranslateScrollStrategy", thumb: false, horizontal: "hidden", classes: "panel-container menu", components: [
 					{name: "menuContainer", kind: "FittableRows", classes: "panel-content", components: [
+						{classes: "c-title", content: "Locations"},
+						{name: "locationList", components: [
+							// Locations get populated here
+						]},
+						{name: "prefLocRow", kind: "FittableColumns", classes: "settings-row", showing: false, components: [
+							{kind: "onyx.InputDecorator", style: "width: 230px;", alwaysLooksFocused: true, components: [
+							    {name: "prefLocInp", kind: "onyx.Input", placeholder: "Enter zip code...", fit: true}
+							]}
+						]},
+						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Add Location", ontap: "addLocation"},
+						{style: "height: 25px;"},
 						{classes: "c-title", content: "Settings"},
 						{kind: "FittableColumns", classes: "settings-row", components: [
 							{content: "Units", classes: "label", fit: true},
 							{kind: "onyx.PickerDecorator", components: [
 								{name: "prefUnitsButton", kind: "onyx.PickerButton", content: "Units", classes: "custom-picker"},
-								{name: "prefUnitsPick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
+								{name: "prefUnitsPick", kind: "onyx.Picker", components: [
 									{content: "Auto", name: "optAuto", active: true},
 									{content: "Imperial", name: "optImperial"},
 									{content: "Metric", name: "optMetric"}
@@ -56,7 +75,7 @@ enyo.kind({
 							{content: "Time", classes: "label", fit: true},
 							{kind: "onyx.PickerDecorator", components: [
 								{name: "prefTimeButton", kind: "onyx.PickerButton", content: "Time", classes: "custom-picker"},
-								{name: "prefTimePick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
+								{name: "prefTimePick", kind: "onyx.Picker", components: [
 									{content: "12 hour", name: "opt12hour", active: true},
 									{content: "24 hour", name: "opt24hour"}
 								]}
@@ -66,7 +85,7 @@ enyo.kind({
 							{content: "Icon Pack", classes: "label", fit: true},
 							{kind: "onyx.PickerDecorator", components: [
 								{name: "prefIconsButton", kind: "onyx.PickerButton", content: "Default", classes: "custom-picker"},
-								{name: "prefIconsPick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
+								{name: "prefIconsPick", kind: "onyx.Picker", components: [
 									{content: "White", name: "optIconsWhite", active: true},
 									{content: "Color", name: "optIconsColor"}
 								]}
@@ -76,15 +95,17 @@ enyo.kind({
 							{content: "Theme", classes: "label", fit: true},
 							{kind: "onyx.PickerDecorator", components: [
 								{name: "prefThemeButton", kind: "onyx.PickerButton", content: "Default", classes: "custom-picker"},
-								{name: "prefThemePick", kind: "onyx.Picker", onChange: "setAppPrefs", components: [
+								{name: "prefThemePick", kind: "onyx.Picker", components: [
 									{content: "Default", name: "optThemeDefault", active: true},
 									{content: "Light", name: "optThemeLight"},
 									{content: "Holo Dark", name: "optThemeHoloDark"}
 								]}
 							]}
 						]},
+						{style: "height: 20px;"},
 						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Save and Apply", ontap: "saveAppPrefs"},
-						{classes: "c-title", style: "margin-top: 20px;", content: "App"},
+						{name: "btnLaunchWidget", kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Launch Widget", showing: false, ontap: "launchWidget"},
+						// {classes: "c-title", style: "margin-top: 20px;", content: "App"},
 						// {kind: "onyx.WebAppButton", classes: "onyx-dark settings-button"},
 						{kind: "onyx.Button", classes: "onyx-dark settings-button", content: "Show Help Boxes", ontap: "showHelpBoxes"}
 					]}
@@ -159,7 +180,15 @@ enyo.kind({
 				{name: "tabbarCurrently", classes: "tab", content: "Currently", ontap: "switchTab"},
 				{name: "tabbarHourly", classes: "tab", content: "Hourly", ontap: "switchTab"},
 				{name: "tabbarDaily", classes: "tab", content: "Daily", ontap: "switchTab"}
-			]}
+			]},
+			{name: "modalPopup", classes: "onyx-sample-popup", kind: "onyx.Popup", centered: true, modal: true, floating: true, onShow: "popupShown", onHide: "popupHidden", components: [
+				{kind: "onyx.InputDecorator", components: [
+					{kind: "onyx.Input"}
+				]},
+				{tag: "br"},
+				{kind: "onyx.Button", content: "Close", ontap: "closeModalPopup"},
+				{kind: "onyx.Button", content: "Another!", ontap: "showPopup", popup: "lightPopup"}
+			]},
 		]}
 	],
 	create: function() {
@@ -174,6 +203,11 @@ enyo.kind({
 		else if (enyo.platform.firefox) {
 			console.log("Firefox detected.");
 		}
+		else if (enyo.platform.webos) {
+			console.log("Platform: " + "webOS detected.");
+			PalmSystem.stageReady();
+			this.$.btnLaunchWidget.setShowing(true);
+		}
 		else {
 			console.log("Unknown platform.");
 			console.log(enyo.platform);
@@ -181,6 +215,7 @@ enyo.kind({
 	},
 	rendered: function() {
 		this.inherited(arguments);
+
 		if (dwpDemoMode)
 			console.log("Dash Weather+ is in DEMO MODE");
 
@@ -209,7 +244,7 @@ enyo.kind({
 		}
 	},
 	loadAppPrefs: function() {
-		console.log("Getting app prefs...");
+		console.log("Loading app prefs...");
 
 		if(!this.isLocalStorageAvailable()) {
 			chrome.storage.local.get("appPrefs", enyo.bind(this, function(response){
@@ -221,8 +256,8 @@ enyo.kind({
 		else {
 			if (window.localStorage.appPrefs) {
 				appPrefs = enyo.json.parse(window.localStorage.appPrefs);
-				this.gotAppPrefs();
 			}
+			this.gotAppPrefs();
 		}
 	},
 	gotAppPrefs: function() {
@@ -238,27 +273,102 @@ enyo.kind({
 			appPrefs.firstUse = false;
 			this.saveAppPrefs();
 		}
+
+		this.populateLocations();
 	},
-	setAppPrefs: function(sender) {
-		if (sender.name == "prefUnitsPick") {
-			appPrefs.units = this.$.prefUnitsPick.getSelected().name;
-			this.requestRefresh = true;
+	populateLocations: function() {
+		this.$.locationList.destroyClientControls();
+		for (i=0; i<appPrefs.locs.length; i++) {
+			var classes;
+			if (appPrefs.locs[i].active)
+				classes = "location-row active";
+			else
+				classes = "location-row";
+
+			this.$.locationList.createComponent({index: i, classes: classes, coords: appPrefs.locs[i].coords, content: appPrefs.locs[i].displayName, ontap: "selectLocation", onhold: "removeLocation", owner: this});
 		}
-		else if (sender.name == "prefTimePick")
-			appPrefs.hours = this.$.prefTimePick.getSelected().name;
-		else if (sender.name == "prefIconsPick")
-			appPrefs.icons = this.$.prefIconsPick.getSelected().name;
-		else if (sender.name == "prefThemePick")
-			appPrefs.theme = this.$.prefThemePick.getSelected().name;
+		this.$.locationList.render();
 	},
-	saveAppPrefs: function(sender) {
-		// console.log("Save app prefs...");
-		// console.log(appPrefs);
+	selectLocation: function(sender) {
+		for (i=0; i<appPrefs.locs.length; i++) {
+			if (i == sender.index)
+				appPrefs.locs[i].active = true;
+			else
+				appPrefs.locs[i].active = false;
+		}
+
+		appPrefs.loc = sender.coords;
+		this.populateLocations();
+		this.saveAppPrefs({content: "Save and Apply"}, true);
+	},
+	removeLocation: function(sender, event) {
+		if (sender.index != 0) {
+			appPrefs.locs.splice(sender.index, 1);
+			this.saveAppPrefs();
+			this.populateLocations();
+		}
+	},
+	addLocation: function() {
+		var inputShowing = this.$.prefLocRow.getShowing();
+		if (!inputShowing) {
+			this.$.prefLocRow.setShowing(true);
+		}
+		else {
+			var query = this.$.prefLocInp.getValue();
+			var url = "http://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&sensor=true";
+			var request = new enyo.Ajax({url: url});
+			request.response(this, function(sender, response) {
+				// console.log(response);
+				if (response.status == "OK") {
+					// Break down the response into a nice name
+					var city, state, country = "";
+					var results = response.results[0].address_components;
+					for (i=0; i<results.length; i++) {
+						if (results[i].types[0] == "locality" || results[i].types[0] == "administrative_area_level_3")
+							city = results[i].short_name;
+						else if (results[i].types[0] == "administrative_area_level_1")
+							state = results[i].short_name;
+						else if (results[i].types[0] == "country")
+							country = results[i].short_name;
+					}
+
+					// Grab the gps coords
+					var coords = response.results[0].geometry.location.lat + "," + response.results[0].geometry.location.lng;
+
+					// Add the new location to the list
+					appPrefs.locs.push({displayName: city+", "+state, coords: coords, active: false});
+
+					this.populateLocations();
+					this.saveAppPrefs();
+				}
+				else {
+					this.$.statusLine2.setContent("Error: Location not found");
+				}
+			});
+			request.go();
+			this.$.prefLocRow.setShowing(false);
+		}
+		// this.$.prefLocRow.applyStyle("display", "block");
+	},
+	saveAppPrefs: function(sender, refresh) {
+		console.log("Saving app prefs...");
+
+		// If prefUnitsPick or prefGpsPick is different, we need to call forecast.io for updated data
+		var requestRefresh = false;
+		if (refresh === true || (appPrefs.units != this.$.prefUnitsPick.getSelected().name)) {
+			requestRefresh = true;
+		}
+
+		// Getting appPrefs updated and ready to be stored
+		appPrefs.units = this.$.prefUnitsPick.getSelected().name;
+		appPrefs.hours = this.$.prefTimePick.getSelected().name;
+		appPrefs.icons = this.$.prefIconsPick.getSelected().name;
+		appPrefs.theme = this.$.prefThemePick.getSelected().name;
 
 		var prefs = enyo.json.stringify(appPrefs);
 		if(!this.isLocalStorageAvailable()) {
 			chrome.storage.local.set({'appPrefs': prefs}, enyo.bind(this, function() {
-				console.log('Settings saved');
+				console.log('appPrefs saved');
 			}));
 		}
 		else {
@@ -266,13 +376,12 @@ enyo.kind({
 		}
 
 		if (sender && sender.content == "Save and Apply") {
-			if (this.requestRefresh)
+			if (requestRefresh)
 				this.refreshData();
 			else
 				this.gotWeatherData({}, this.lastWeatherResponse);
 
 			this.applyTheme(appPrefs.theme);
-			this.requestRefresh = false;
 		}
 	},
 	applyTheme: function(theme) {
@@ -308,6 +417,7 @@ enyo.kind({
 		this.getLocation();
 	},
 	getLocation: function() {
+		// appPrefs.loc = 19040;
 		// console.log("Demo Mode: " + dwpDemoMode);
 		if (dwpDemoMode) {
 			var url = "assets/demo.json";
@@ -319,13 +429,28 @@ enyo.kind({
 		}
 		else {
 			this.$.statusLine2.setContent("Requesting location...");
-
-			var app = this;
-			navigator.geolocation.getCurrentPosition(function(position) {
-				var location = position.coords.latitude + "," + position.coords.longitude;
-				// console.log("GPS location: " + location);
-				app.getWeatherData(location);
-			});
+			if (appPrefs.loc != "gps") {
+				var url = "http://maps.googleapis.com/maps/api/geocode/json?address=" + appPrefs.loc + "&sensor=true";
+				var request = new enyo.Ajax({url: url});
+				request.response(this, function(sender, response) {
+					// console.log(response);
+					if (response.status == "OK") {
+						var location = response.results[0].geometry.location.lat + "," + response.results[0].geometry.location.lng;
+						this.getWeatherData(location);
+					}
+					else {
+						this.$.statusLine2.setContent("Error: Location not found");
+					}
+				});
+				request.go();
+			}
+			else {
+				navigator.geolocation.getCurrentPosition(enyo.bind(this, function(position) {
+					var location = position.coords.latitude + "," + position.coords.longitude;
+					// console.log("GPS location: " + location);
+					this.getWeatherData(location);
+				}));
+			}
 		}
 	},
 	switchTab: function(sender, event) {
@@ -341,6 +466,8 @@ enyo.kind({
 	panelChanged: function(sender, event) {
 		var newPanel = event.toIndex - 1;
 		this.$.tabIndicator.setPosition(newPanel);
+		if (event.fromIndex == 0)
+			this.$.prefLocRow.setShowing(false);
 	},
 	getWeatherData: function(location) {
 		this.$.statusLine2.setContent("Getting forecast...");
@@ -359,7 +486,7 @@ enyo.kind({
 				break;
 		};
 
-		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?exclude=flags&units="+units;
+		var url = "https://api.forecast.io/forecast/"+dwpApiKey+"/"+myLoc+"?&units="+units;
 
 		if(!this.isLocalStorageAvailable()) { // TODO: Find a better way to determine if running as a Chrome packaged app.
 			var request = new enyo.Ajax({
@@ -376,7 +503,7 @@ enyo.kind({
 		request.go();
 	},
 	gotWeatherData: function(sender, response) {
-		console.log(response);
+		// console.log(response);
 		this.lastWeatherResponse = response;
 		this.$.sysWarning.setContent("");
 
@@ -502,11 +629,11 @@ enyo.kind({
 		else
 			windBearing = "?";
 
-		if (appPrefs.units == "optMetric") {
-			wind = windBearing + " at " + windSpeed + "<span class='label-units'>m/s</span>";
+		if (response.flags.units == "us") {
+			wind = windBearing + " at " + windSpeed + "<span class='label-units'>mph</span>";
 		}
 		else {
-			wind = windBearing + " at " + windSpeed + "<span class='label-units'>mph</span>";
+			wind = windBearing + " at " + windSpeed + "<span class='label-units'>m/s</span>";
 		}
 
 		this.$.eleWind.setDesc(wind);
@@ -514,11 +641,11 @@ enyo.kind({
 		// Get visibility
 		var vis = now.visibility;
 
-		if (appPrefs.units == "optMetric") {
-			vis += "<span class='label-units'>km</span>";
+		if (response.flags.units == "us") {
+			vis += "<span class='label-units'>mi</span>";
 		}
 		else {
-			vis += "<span class='label-units'>mi</span>";
+			vis += "<span class='label-units'>km</span>";
 		}
 
 		this.$.eleVis.setDesc(vis);
@@ -564,11 +691,11 @@ enyo.kind({
 			// Get the precipitation
 			var precip = "0";
 			if (hourly[i].precipIntensity !== 0) {
-				precip = parseInt(hourly[i].precipProbability * 100, 10);
+				precip = parseInt(hourly[i].precipProbability * 100, 10) + "<span class='label-units'>%</span>";
 			}
 
 			// Get cloud cover
-			var cloud = parseInt(hourly[i].cloudCover * 100, 10);
+			var cloud = parseInt(hourly[i].cloudCover * 100, 10) + "<span class='label-units'>%</span>";
 
 			// Create a new HourlyForecast row
 			this.$.hourlyContainer.createComponent({kind: "HourlyForecastRow", hour: hour, icon: icon, temp: temp, forecast: forecast, precip: precip, cloud: cloud});
@@ -667,5 +794,22 @@ enyo.kind({
 	},
 	closeHelpBox: function(sender) {
 		this.$[sender.name].applyStyle("display", "none");
+	},
+	// webOS widget stuff
+	launchWidget: function() {
+		window.open("widget.html", "dwpWidget", 'attributes={"window": "dashboard", "dashHeight": 320}');
+	},
+	scrollIt: function(sender, event) {
+		var tab = this.$.panels.getActive();
+		var pos = tab.getScrollTop();
+		var newPos = pos;
+		if (sender.name == "tapScrollUp") {
+			newPos -= 100;
+			tab.scrollTo(0, newPos);
+		}
+		else {
+			newPos += 100;
+			tab.scrollTo(0, newPos);
+		}
 	}
 });

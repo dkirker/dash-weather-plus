@@ -43,9 +43,9 @@ enyo.kind({
 		this.$.hour.setContent(this.hour);
 		this.$.icon.applyStyle("background-image", "url('assets/icons/" + appPrefs.icons + "/icon64/" + this.icon + ".png')");
 		this.$.forecast.setContent(this.temp + " " + this.forecast);
-		this.$.precip.setContent(this.precip + "<span class='label-units'>%</span>");
+		this.$.precip.setContent(this.precip);
 		this.$.precip.applyStyle("background-image", "url('assets/icons/" + appPrefs.icons + "/icon24/rain.png')");
-		this.$.cloud.setContent(this.cloud + "<span class='label-units'>%</span>");
+		this.$.cloud.setContent(this.cloud);
 		this.$.cloud.applyStyle("background-image", "url('assets/icons/" + appPrefs.icons + "/icon24/cloudy.png')");
 	}
 });
