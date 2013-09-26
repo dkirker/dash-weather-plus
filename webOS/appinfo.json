@@ -1,6 +1,6 @@
 {
   "id": "com.choorp.dash-weather-plus",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "vendor": "Garrett Downs",
   "type": "web",
   "main": "index.html",
