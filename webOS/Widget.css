@@ -1,10 +1,16 @@
 /* webOS widget styles */
 
-.widget {
-	background: #000 url("assets/widget-bg2.png") center center;
+.main {
+	background: #000 url("assets/widget-bg.png") center center;
 	background-size: cover;
 	color: #a5a5a5;
-	font-size: 15px;
+	font-size: 16px;
+}
+
+@media (max-height: 80px) {
+	.main {
+		background: #000 url("assets/widget-bg-phone.png") center center;
+	}
 }
 
 .label-units {
@@ -53,7 +59,7 @@
 }
 
 .header .status-box {
-	padding: 5px 5px 0 0;
+	padding: 5px 10px 0 0;
 	font-size: 15px;
 	text-align: right;
 }
