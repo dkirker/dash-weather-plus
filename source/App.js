@@ -21,7 +21,7 @@ var appPrefs = {
 	icons: "optIconsColor",
 	theme: "optThemeDefault",
 	loc: "gps",
-	firstUse: true,,
+	firstUse: true,
 	autoloadWidget: false,
 	closeOnLoad: false,
 	locs: [
